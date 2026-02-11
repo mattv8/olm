@@ -641,7 +641,8 @@ func (o *Olm) Close() {
 		// If we never created a device from the FD, close it explicitly
 		// This can happen if tunnel is stopped during registration before handleConnect
 		logger.Debug("Closing unused TUN file descriptor %d", o.tunnelConfig.FileDescriptorTun)
-		if err := closeFD(o.tunnelConfig.FileDescriptorTun); err != nil {
+		f := os.NewFile(uintptr(o.tunnelConfig.FileDescriptorTun), "tun-fd")
+		if err := f.Close(); err != nil {
 			logger.Error("Failed to close TUN file descriptor: %v", err)
 		} else {
 			logger.Info("Closed unused TUN file descriptor")
